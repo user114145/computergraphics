@@ -1,0 +1,11 @@
+OpenGL framework
+================
+
+This zip-file contains a very simple OpenGL framework that you can use as
+a basis for the programs you will create for the Computer Graphics course.
+
+You will find build files for both Linux/Unix/OS X as well as MingW for
+Windows.
+
+Building is simply:
+  make
