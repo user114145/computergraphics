@@ -58,14 +58,20 @@ Color Scene::trace(const Ray &ray)
     ****************************************************/
 
     Color color;
-    Vector L;
+    Vector L, R;
     for (std::vector<Light*>::iterator it=lights.begin(); it!=lights.end(); ++it) {
+        // Ambient
+        color += (*it)->color * material->color * material->ka;
+        // Diffusion
         L = (*it)->position - hit;
         L.normalize();
         if (N.dot(L) < 0.0)
             continue;
-        //color += (*it)->color * material->color * material->ka;
         color += N.dot(L) * (*it)->color * material->color * material->kd;
+        // Specular
+        R = 2 * N - L;
+        R.normalize();
+        color += pow(V.dot(R), material->n) * (*it)->color * material->ks;
     }
 
     return color;
