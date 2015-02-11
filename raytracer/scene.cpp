@@ -42,7 +42,7 @@ Color Scene::trace(const Ray &ray)
     case PHONG:
         return renderPhong(material, hit, N, V);
     case ZBUFFER:
-        return renderZBuffer(hit, N);
+        return renderZBuffer(hit);
     case NORMAL:
         return renderNormal(hit, N);
     }
@@ -72,9 +72,9 @@ Color Scene::renderPhong(Material *m, Point hit, Vector N, Vector V)
     return color;
 }
 
-Color Scene::renderZBuffer(Point hit, Vector N)
+Color Scene::renderZBuffer(Point hit)
 {
-    return Color(0.0, 0.0, 0.0);
+    return Color(hit.z, hit.z, hit.z);
 }
 
 Color Scene::renderNormal(Point hit, Vector N)
@@ -91,6 +91,32 @@ void Scene::render(Image &img)
             Point pixel(x+0.5, h-1-y+0.5, 0);
             Ray ray(eye, (pixel-eye).normalized());
             Color col = trace(ray);
+            img(x,y) = col;
+        }
+    }
+
+    if (mode == ZBUFFER) {
+        double min=pow(2,32), max=0, scale, c;
+        for (int y=0; y<h; ++y) {
+            for (int x=0; x<w; ++x) {
+                min = (img(x,y).r < min) ? img(x,y).r : min;
+                max = (img(x,y).r > max) ? img(x,y).r : max;
+            }
+        }
+        scale = 1 / (max-min);
+        for (int y=0; y<h; ++y) {
+            for (int x=0; x<w; ++x) {
+                c = (img(x,y).r - min) * scale;
+                img(x,y) = Color(c, c, c);
+            }
+        }
+    }
+
+    // Make sure the colors are not out of range
+    Color col;
+    for (int y=0; y<h; ++y) {
+        for (int x=0; x<w; ++x) {
+            col = img(x,y);
             col.clamp();
             img(x,y) = col;
         }

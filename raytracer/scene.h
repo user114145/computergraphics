@@ -39,7 +39,7 @@ private:
     // Change the render mode
     RENDER_MODE mode;
     Color renderPhong(Material *m, Point hit, Vector N, Vector V);
-    Color renderZBuffer(Point hit, Vector N);
+    Color renderZBuffer(Point hit);
     Color renderNormal(Point hit, Vector N);
 public:
     Color trace(const Ray &ray);
