@@ -9,9 +9,9 @@
 //    Maarten Everts
 //    Jasper van de Gronde
 //
-//  This framework is inspired by and uses code of the raytracer framework of 
+//  This framework is inspired by and uses code of the raytracer framework of
 //  Bert Freudenberg that can be found at
-//  http://isgwww.cs.uni-magdeburg.de/graphik/lehre/cg2/projekt/rtprojekt.html 
+//  http://isgwww.cs.uni-magdeburg.de/graphik/lehre/cg2/projekt/rtprojekt.html
 //
 
 #include "scene.h"
@@ -57,7 +57,16 @@ Color Scene::trace(const Ray &ray)
     *        pow(a,b)           a to the power of b
     ****************************************************/
 
-    Color color = material->color;                  // place holder
+    Color color;
+    Vector L;
+    for (std::vector<Light*>::iterator it=lights.begin(); it!=lights.end(); ++it) {
+        L = (*it)->position - hit;
+        L.normalize();
+        if (N.dot(L) < 0.0)
+            continue;
+        //color += (*it)->color * material->color * material->ka;
+        color += N.dot(L) * (*it)->color * material->color * material->kd;
+    }
 
     return color;
 }
