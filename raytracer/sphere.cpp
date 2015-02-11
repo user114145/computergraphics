@@ -43,7 +43,7 @@ Hit Sphere::intersect(const Ray &ray)
     dir  = ray.D.normalized();
     T = ray.O - position;
 
-    B = 2 * dir.dot(ray.O-position);
+    B = 2 * dir.dot(T);
     C = T.dot(T) - (r*r);
     d = B*B - 4*C;
 

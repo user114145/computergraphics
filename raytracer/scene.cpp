@@ -69,7 +69,8 @@ Color Scene::trace(const Ray &ray)
             continue;
         color += N.dot(L) * (*it)->color * material->color * material->kd;
         // Specular
-        R = 2 * N - L;
+        R = 2 * N.dot(L) * N - L;
+        if (R.dot(V) < 0) continue;
         R.normalize();
         color += pow(V.dot(R), material->n) * (*it)->color * material->ks;
     }
