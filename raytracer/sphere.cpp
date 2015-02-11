@@ -52,6 +52,8 @@ Hit Sphere::intersect(const Ray &ray)
     t = (-B - sqrt(d)) / 2.0;
     if (t < 0.0)
         t = (-B + sqrt(d)) / 2.0;
+    if (t < 0.0)
+        return Hit::NO_HIT();
 
     /****************************************************
     * RT1.2: NORMAL CALCULATION
