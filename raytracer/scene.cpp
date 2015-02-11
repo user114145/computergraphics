@@ -44,7 +44,7 @@ Color Scene::trace(const Ray &ray)
     case ZBUFFER:
         return renderZBuffer(hit);
     case NORMAL:
-        return renderNormal(hit, N);
+        return renderNormal(N);
     }
     return Color(0.0, 0.0, 0.0);
 }
@@ -77,9 +77,11 @@ Color Scene::renderZBuffer(Point hit)
     return Color(hit.z, hit.z, hit.z);
 }
 
-Color Scene::renderNormal(Point hit, Vector N)
+Color Scene::renderNormal(Vector N)
 {
-    return Color(0.0, 0.0, 0.0);
+    Vector C = N.normalized();
+    C = (C + 1) * .5;
+    return Color(C.x, C.y, C.z);
 }
 
 void Scene::render(Image &img)
