@@ -9,9 +9,9 @@
 //    Maarten Everts
 //    Jasper van de Gronde
 //
-//  This framework is inspired by and uses code of the raytracer framework of 
+//  This framework is inspired by and uses code of the raytracer framework of
 //  Bert Freudenberg that can be found at
-//  http://isgwww.cs.uni-magdeburg.de/graphik/lehre/cg2/projekt/rtprojekt.html 
+//  http://isgwww.cs.uni-magdeburg.de/graphik/lehre/cg2/projekt/rtprojekt.html
 //
 
 #include "sphere.h"
@@ -27,8 +27,8 @@ Hit Sphere::intersect(const Ray &ray)
     *
     * Given: ray, position, r
     * Sought: intersects? if true: *t
-    * 
-    * Insert calculation of ray/sphere intersection here. 
+    *
+    * Insert calculation of ray/sphere intersection here.
     *
     * You have the sphere's center (C) and radius (r) as well as
     * the ray's origin (ray.O) and direction (ray.D).
@@ -37,25 +37,31 @@ Hit Sphere::intersect(const Ray &ray)
     * Otherwise, return true and place the distance of the
     * intersection point from the ray origin in *t (see example).
     ****************************************************/
+    double B, C, d, t;
+    Vector dir, T;
 
-    // place holder for actual intersection calculation
+    dir  = ray.D.normalized();
+    T = ray.O - position;
 
-    Vector OC = (position - ray.O).normalized();
-    if (OC.dot(ray.D) < 0.999) {
+    B = 2 * dir.dot(ray.O-position);
+    C = T.dot(T) - (r*r);
+    d = B*B - 4*C;
+
+    if (d < 0.0)
         return Hit::NO_HIT();
-    }
-    double t = 1000;
+    t = (-B - sqrt(d)) / 2.0;
+    if (t < 0.0)
+        t = (-B + sqrt(d)) / 2.0;
 
     /****************************************************
     * RT1.2: NORMAL CALCULATION
     *
     * Given: t, C, r
     * Sought: N
-    * 
+    *
     * Insert calculation of the sphere's normal at the intersection point.
     ****************************************************/
-
-    Vector N /* = ... */;
+    Vector N = ray.at(t) - position;
 
     return Hit(t,N);
 }
