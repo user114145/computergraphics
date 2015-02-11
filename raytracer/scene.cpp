@@ -38,44 +38,48 @@ Color Scene::trace(const Ray &ray)
     Vector N = min_hit.N;                          //the normal at hit point
     Vector V = -ray.D;                             //the view vector
 
+    switch (mode) {
+    case PHONG:
+        return renderPhong(material, hit, N, V);
+    case ZBUFFER:
+        return renderZBuffer(hit, N);
+    case NORMAL:
+        return renderNormal(hit, N);
+    }
+    return Color(0.0, 0.0, 0.0);
+}
 
-    /****************************************************
-    * This is where you should insert the color
-    * calculation (Phong model).
-    *
-    * Given: material, hit, N, V, lights[]
-    * Sought: color
-    *
-    * Hints: (see triple.h)
-    *        Triple.dot(Vector) dot product
-    *        Vector+Vector      vector sum
-    *        Vector-Vector      vector difference
-    *        Point-Point        yields vector
-    *        Vector.normalize() normalizes vector, returns length
-    *        double*Color        scales each color component (r,g,b)
-    *        Color*Color        dito
-    *        pow(a,b)           a to the power of b
-    ****************************************************/
-
+Color Scene::renderPhong(Material *m, Point hit, Vector N, Vector V)
+{
     Color color;
     Vector L, R;
     for (std::vector<Light*>::iterator it=lights.begin(); it!=lights.end(); ++it) {
         // Ambient
-        color += (*it)->color * material->color * material->ka;
+        color += (*it)->color * m->color * m->ka;
         // Diffusion
         L = (*it)->position - hit;
         L.normalize();
         if (N.dot(L) < 0.0)
             continue;
-        color += N.dot(L) * (*it)->color * material->color * material->kd;
+        color += N.dot(L) * (*it)->color * m->color * m->kd;
         // Specular
         R = 2 * N.dot(L) * N - L;
         if (R.dot(V) < 0) continue;
         R.normalize();
-        color += pow(V.dot(R), material->n) * (*it)->color * material->ks;
+        color += pow(V.dot(R), m->n) * (*it)->color * m->ks;
     }
 
     return color;
+}
+
+Color Scene::renderZBuffer(Point hit, Vector N)
+{
+    return Color(0.0, 0.0, 0.0);
+}
+
+Color Scene::renderNormal(Point hit, Vector N)
+{
+    return Color(0.0, 0.0, 0.0);
 }
 
 void Scene::render(Image &img)
@@ -107,3 +111,9 @@ void Scene::setEye(Triple e)
 {
     eye = e;
 }
+
+void Scene::setMode(RENDER_MODE m)
+{
+    mode = m;
+}
+

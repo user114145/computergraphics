@@ -7,9 +7,9 @@
 //
 //  Author: Maarten Everts
 //
-//  This framework is inspired by and uses code of the raytracer framework of 
+//  This framework is inspired by and uses code of the raytracer framework of
 //  Bert Freudenberg that can be found at
-//  http://isgwww.cs.uni-magdeburg.de/graphik/lehre/cg2/projekt/rtprojekt.html 
+//  http://isgwww.cs.uni-magdeburg.de/graphik/lehre/cg2/projekt/rtprojekt.html
 //
 
 #include "raytracer.h"
@@ -40,14 +40,14 @@ Triple parseTriple(const YAML::Node& node)
     Triple t;
     node[0] >> t.x;
     node[1] >> t.y;
-    node[2] >> t.z;	
+    node[2] >> t.z;
     return t;
 }
 
 Material* Raytracer::parseMaterial(const YAML::Node& node)
 {
     Material *m = new Material();
-    node["color"] >> m->color;	
+    node["color"] >> m->color;
     node["ka"] >> m->ka;
     node["kd"] >> m->kd;
     node["ks"] >> m->ks;
@@ -66,7 +66,7 @@ Object* Raytracer::parseObject(const YAML::Node& node)
         node["position"] >> pos;
         double r;
         node["radius"] >> r;
-        Sphere *sphere = new Sphere(pos,r);		
+        Sphere *sphere = new Sphere(pos,r);
         returnObject = sphere;
     }
 
@@ -107,6 +107,20 @@ bool Raytracer::readScene(const std::string& inputFilename)
         if (parser) {
             YAML::Node doc;
             parser.GetNextDocument(doc);
+
+            // Read the render mode, default to Phong illumination
+            try {
+                std::string m;
+                doc["RenderMode"] >> m;
+                if (m == "normal")
+                    scene->setMode(NORMAL);
+                else if (m == "zbuffer")
+                    scene->setMode(ZBUFFER);
+                else if (m == "phong")
+                    scene->setMode(PHONG);
+            } catch (YAML::TypedKeyNotFound<std::string> &e) {
+                scene->setMode(PHONG);
+            }
 
             // Read scene configuration options
             scene->setEye(parseTriple(doc["Eye"]));

@@ -9,9 +9,9 @@
 //    Maarten Everts
 //    Jasper van de Gronde
 //
-//  This framework is inspired by and uses code of the raytracer framework of 
+//  This framework is inspired by and uses code of the raytracer framework of
 //  Bert Freudenberg that can be found at
-//  http://isgwww.cs.uni-magdeburg.de/graphik/lehre/cg2/projekt/rtprojekt.html 
+//  http://isgwww.cs.uni-magdeburg.de/graphik/lehre/cg2/projekt/rtprojekt.html
 //
 
 #ifndef SCENE_H_KNBLQLP6
@@ -23,18 +23,31 @@
 #include "object.h"
 #include "image.h"
 
+typedef enum RENDER_MODE {
+    PHONG,
+    ZBUFFER,
+    NORMAL,
+} RENDER_MODE;
+
 class Scene
 {
 private:
     std::vector<Object*> objects;
     std::vector<Light*> lights;
     Triple eye;
+
+    // Change the render mode
+    RENDER_MODE mode;
+    Color renderPhong(Material *m, Point hit, Vector N, Vector V);
+    Color renderZBuffer(Point hit, Vector N);
+    Color renderNormal(Point hit, Vector N);
 public:
     Color trace(const Ray &ray);
     void render(Image &img);
     void addObject(Object *o);
     void addLight(Light *l);
     void setEye(Triple e);
+    void setMode(RENDER_MODE m);
     unsigned int getNumObjects() { return objects.size(); }
     unsigned int getNumLights() { return lights.size(); }
 };
